@@ -1,9 +1,20 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { useMovies } from '../context/MoviesContext';
 
 function Navbar() {
+
+ const [isMenuClick,setIsMenuClick] = useState(false)
+
+ const [searchQuery,setSearchQuery]= useState("")
+ const [searchResult,setSearchResult]= useState([])
+ const [isSearching,setIsSearching]= useState(false)
+ const [showSearchResult,setShowSearchResult]= useState(false)
+ const searchContainerRef = useRef(null)
+
+  
   return (
     <header className="flex w-full z-50 transition-all duration-300">
       <div className='container mx-auto px-4 py-4'>
@@ -30,26 +41,28 @@ function Navbar() {
             </a>
           </nav>
           {/* Desktop Search */}
-          <div className=' block relative search-container'>
+          <div className=' block relative search-container ' ref={searchContainerRef}>
             <div className='relative '>
-              <input type="text" placeholder='Search Movies' className='bg-neutral-800/80 text-white px-4 py-2 rounded-full text-sm w-48 focus:w-64 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50' />
+              <input type="text" placeholder='Search Movies' className='bg-neutral-800/80 text-white px-4 py-2 rounded-full text-sm w-34 md:w-48 focus:w-64 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50' />
               {/* conditional rendering */}
-              <div className='absolute right-3 top-2.5'>
+             { isSearching?
+              (<div className='absolute right-3 top-2.5'>
                 <AiOutlineLoading3Quarters
                   className='w-4 h-4 text-neutral-400 animate-spin'
                 />
-              </div>
-
-              {/* Else */}
-              <div className='absolute right-3 top-3'>
+              </div>)
+              :
+              
+              (<div className='absolute right-3 top-3'>
                 <CiSearch
                   className='w-4 h-4 text-neutral-400'
                 />
-              </div>
+              </div>)}
 
             </div>
             {/* search result conditional rendering */}
-            <div className="absolute mt-2  w-full md:w-72 bg-neutral-800 rounded-lg shadow-lg overflow-hidden z-50">
+           {showSearchResult && searchResult && searchResult.length>0 && 
+           (<div className="absolute mt-2  w-full md:w-72 bg-neutral-800 rounded-lg shadow-lg overflow-hidden z-50">
               <ul className='divide-y divide-neutral-700'>
                 <li className='hover:bg-neutral-700'>
                   <button className='flex items-center p-3 w-full text-left'>
@@ -73,25 +86,28 @@ function Navbar() {
                   </button>
                 </li>
               </ul>
-            </div>
+            </div>)
+            }
             {/* Conditional Rendering */}
-            <div className='absolute mt-2 w-full md:w-70 bg-neutral-800 rounded-lg shadow-lg overflow-hidden z-50'>
+           { showSearchResult && searchQuery.trim().length>2 && (!searchResult || searchResult.length ===0) && !isSearching &&
+            (<div className='absolute mt-2 w-full md:w-70 bg-neutral-800 rounded-lg shadow-lg overflow-hidden z-50'>
               <div className='p-4 text-center overflow-hidden text-neutral-400 text-sm'>
                 No movies found matching.....
               </div>
-            </div>
+            </div>)
+            }
           </div>
           {/* Mobile Menu Button */}
-          <button className='md:hidden text-white '>
+          <button onClick={()=>setIsMenuClick(!isMenuClick)} className='md:hidden text-white '>
             {/* conditional rendering */}
-            <HiOutlineX className="h-6 w-6" />
-            {/* else */}
-            <HiOutlineMenu className="h-6 w-6" />
+         {  isMenuClick? <HiOutlineX className="h-6 w-6" />
+            :
+            <HiOutlineMenu className="h-6 w-6" />}
 
           </button>
         </div>
         {/* mobile navigation conditional rendering  */}
-        <div className='mt-4 pb-4 space-y-4 md:hidden'>
+       { isMenuClick&&<div className='mt-4 pb-4 space-y-4 md:hidden'>
           <a href="#" className='block text-white hover:text-blue-400 transition-colors py-2 font-medium '>
             Home
           </a>
@@ -106,7 +122,7 @@ function Navbar() {
           </a>
           
 
-        </div>
+        </div>}
       </div>
     </header>
   )
