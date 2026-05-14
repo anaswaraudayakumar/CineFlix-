@@ -9,8 +9,7 @@ function HeroSection() {
     const {trendingMovies,loading} = useMovies()
     const [currentSlide,setCurrentSlide] = useState(0)
     const [isTransitioning,setIsTransitioning] = useState(false)
-    console.log(trendingMovies)
-    console.log(loading)
+    
     const featureMovies = trendingMovies.slice(0,5)
     useEffect(()=>{
         if(loading || featureMovies.length ===0) return
@@ -34,7 +33,7 @@ function HeroSection() {
 
             </div>
         )
-       
+        
         }
          const currentMovie = featureMovies[currentSlide]
         const formRating = (rating)=>{
