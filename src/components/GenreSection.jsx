@@ -1,8 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiPlayCircle } from "react-icons/hi2";
 import { HiStar } from 'react-icons/hi2';
+import { useMovies } from '../context/MoviesContext';
+import { getMoviesByGenreAPI } from '../api/allApi';
 function GenreSection() {
-    return (
+    const { genres, loading, openMoviesDetails} = useMovies();
+    const [selectGenre,setSelectGenre] = useState(null)
+    const [genreList,setGenreList] = useState([])
+    const [loadingGenre,setLoadingGenre] = useState([])
+
+    useEffect(()=>{
+        if(!loading && genres.length>0){
+            setSelectedGenre(genres[0])
+        }
+    },[loading,genres])
+    useEffect(()=>{
+        const loadingGenre = async()=>{
+            if(!selectGenre) return
+            setLoadingGenre(true)
+            const Movies = await getMoviesByGenreAPI(selectGenre.id)
+            setGenreList(Movies.slice(0,8))
+            setLoadingGenre(false)
+        }
+        loadingGenre()
+    },[selectGenre])
+    if ( loading || selectGenre)
+   {
+     return (
         <section className='py-12 bg-neutrl-900/50 ' id=''>
             <div className='container mx-auto px-4'>
                 <h2 className='text-2xl md:text-3xl fond-bold text-white mb-6'>
@@ -78,6 +102,7 @@ function GenreSection() {
             </div>
         </section>
     )
+    }
 }
 
 export default GenreSection
